@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import type { ArtVariant } from "@/config/products";
+import { isCloudinaryConfigured } from "@/config/cloudinary";
 import { BotanicalArt } from "./botanical-art";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,10 @@ export function ImageFrame({
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
+  // No account configured yet → don't even request the URL; the illustration
+  // is the intended visual until real photography is uploaded.
+  const showRemote = isCloudinaryConfigured && !failed;
+
   return (
     <div className={cn("relative h-full w-full overflow-hidden bg-background", className)}>
       {/* Always painted underneath — doubles as the loading state. */}
@@ -41,11 +46,11 @@ export function ImageFrame({
         seed={seed}
         className={cn(
           "absolute inset-0 transition-opacity duration-900 ease-silk",
-          loaded && !failed ? "opacity-0" : "opacity-100"
+          loaded && showRemote ? "opacity-0" : "opacity-100"
         )}
       />
 
-      {!failed && (
+      {showRemote && (
         <Image
           src={src}
           alt={alt}
