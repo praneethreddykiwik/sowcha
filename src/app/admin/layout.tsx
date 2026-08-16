@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCurrentUser, isCurrentUserAdmin } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { AdminNav } from "@/components/admin/admin-nav";
 
 export const metadata: Metadata = {
@@ -15,6 +16,36 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Deployed without the Supabase keys: say so plainly instead of throwing.
+  // The public site keeps working from its bundled content.
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background p-6">
+        <div className="max-w-lg rounded-3xl border border-border bg-card p-10">
+          <h1 className="font-serif text-[28px] font-light">Admin not configured</h1>
+          <p className="mt-3 text-[14px] leading-relaxed text-muted">
+            This deployment has no Supabase credentials, so the admin cannot
+            load. Add these in your hosting environment and redeploy:
+          </p>
+          <pre className="mt-5 overflow-x-auto rounded-2xl bg-background p-4 text-[12.5px] leading-relaxed">
+{`NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY`}
+          </pre>
+          <p className="mt-5 text-[13px] leading-relaxed text-muted">
+            The public site is unaffected — it falls back to the content bundled
+            in the repository.
+          </p>
+          <Link
+            href="/"
+            className="mt-8 inline-block rounded-full bg-ink px-6 py-2.5 text-[13px] text-white"
+          >
+            Back to the site
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const user = await getCurrentUser();
 
   // The login page renders itself; middleware handles the redirect for the rest.
