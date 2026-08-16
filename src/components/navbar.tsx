@@ -4,14 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
 import { Instagram, Menu, X } from "lucide-react";
-import { brand, nav } from "@/config/brand";
+import { nav } from "@/config/brand";
+import type { Settings } from "@/lib/content-types";
 import { Wordmark } from "./butterfly";
 import { ThemeToggle } from "./theme/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function Navbar() {
+export function Navbar({ settings }: { settings: Settings }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -61,7 +62,7 @@ export function Navbar() {
             <Link
               href="/"
               className="shrink-0 transition-transform duration-500 ease-silk hover:scale-[1.02]"
-              aria-label={`${brand.name} — home`}
+              aria-label={`${settings.brandName} — home`}
             >
               <Wordmark />
             </Link>
@@ -83,10 +84,10 @@ export function Navbar() {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <a
-                href={brand.contact.instagram}
+                href={settings.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`${brand.name} on Instagram`}
+                aria-label={`${settings.brandName} on Instagram`}
                 className="hidden h-10 w-10 items-center justify-center rounded-full border border-border/80 bg-card/70 text-muted backdrop-blur transition-all duration-500 ease-silk hover:-translate-y-0.5 hover:border-primary/40 hover:text-ink hover:shadow-soft sm:flex"
               >
                 <Instagram className="h-[16px] w-[16px]" strokeWidth={1.4} />
@@ -162,19 +163,19 @@ export function Navbar() {
               </ul>
 
               <div className="mt-auto space-y-1 pt-8 text-[13px] text-muted">
-                <a href={brand.contact.phoneHref} className="block hover:text-foreground">
-                  {brand.contact.phone}
+                <a href={settings.phoneHref} className="block hover:text-foreground">
+                  {settings.phone}
                 </a>
-                <a href={`mailto:${brand.contact.email}`} className="block hover:text-foreground">
-                  {brand.contact.email}
+                <a href={`mailto:${settings.email}`} className="block hover:text-foreground">
+                  {settings.email}
                 </a>
                 <a
-                  href={brand.contact.instagram}
+                  href={settings.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block hover:text-foreground"
                 >
-                  {brand.contact.instagramHandle}
+                  {settings.instagramHandle}
                 </a>
               </div>
             </motion.div>

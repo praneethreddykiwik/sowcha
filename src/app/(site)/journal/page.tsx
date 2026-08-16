@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { posts } from "@/config/journal";
+import { getSiteContent } from "@/lib/content";
 import { JournalIndex } from "./journal-index";
 
 export const metadata: Metadata = {
@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     "Notes from the SowCha atelier — cloth, plant dye, hand finishing and the thinking behind each piece.",
 };
 
-export default function JournalPage() {
-  return <JournalIndex posts={posts} />;
+export default async function JournalPage() {
+  const { posts, sections } = await getSiteContent();
+  return <JournalIndex posts={posts} copy={sections.journal} />;
 }

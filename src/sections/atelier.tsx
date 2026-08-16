@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { SectionCopy } from "@/lib/content-types";
 import { AnimatedDress } from "@/components/animated-dress";
 import { FloatingLeaves } from "@/components/floating-leaves";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -37,7 +38,7 @@ const specs = [
   },
 ];
 
-export function Atelier() {
+export function Atelier({ copy }: { copy: SectionCopy }) {
   return (
     <section id="atelier" className="relative overflow-hidden py-28 sm:py-36">
       <div
@@ -52,10 +53,10 @@ export function Atelier() {
 
       <div className="container relative">
         <SectionHeading
-          eyebrow="Product Spotlight"
-          title="The Rosewater Anarkali"
-          accentWords={["Anarkali"]}
-          subtitle="Drawn rather than photographed — move your cursor across it and the dupatta, the skirt and the painted vine part company, exactly as they do on a hanger."
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          accentWords={copy.accentWords}
+          subtitle={copy.subtitle}
         />
 
         <div className="relative mt-16 lg:mt-24">

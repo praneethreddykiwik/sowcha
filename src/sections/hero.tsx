@@ -10,14 +10,14 @@ import {
   useTransform,
 } from "framer-motion";
 import { ArrowDown } from "lucide-react";
-import { brand } from "@/config/brand";
+import type { Settings } from "@/lib/content-types";
 import { Butterfly } from "@/components/butterfly";
 import { FloatingLeaves } from "@/components/floating-leaves";
 import { LinkButton } from "@/components/ui/button";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function Hero() {
+export function Hero({ settings }: { settings: Settings }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
 
@@ -36,7 +36,7 @@ export function Hero() {
   const rotY = useSpring(useTransform(mx, [0, 1], [14, -14]), spring);
   const rotX = useSpring(useTransform(my, [0, 1], [-10, 10]), spring);
 
-  const words = brand.tagline.split(" ");
+  const words = settings.tagline.split(" ");
 
   return (
     <section
@@ -112,7 +112,7 @@ export function Hero() {
           transition={{ duration: 1, ease, delay: 0.5 }}
           className="eyebrow mt-9"
         >
-          {brand.name} · Est. 2021 · Hyderabad
+          {settings.brandName} · Est. 2021 · Hyderabad
         </motion.p>
 
         <h1 className="mt-5 font-serif text-[clamp(2.9rem,9vw,7rem)] font-light leading-[0.98] tracking-[-0.02em]">
@@ -137,7 +137,7 @@ export function Hero() {
           transition={{ duration: 1.2, ease, delay: 1.05 }}
           className="mt-7 max-w-[48ch] text-[15px] leading-[1.9] text-muted pretty"
         >
-          {brand.shortAbout}
+          {settings.shortAbout}
         </motion.p>
 
         <motion.div

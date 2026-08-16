@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { Instagram, Linkedin, Mail, MapPin, Phone } from "lucide-react";
-import { brand, nav } from "@/config/brand";
+import { nav } from "@/config/brand";
+import type { Settings } from "@/lib/content-types";
 import { Butterfly } from "./butterfly";
 import { FloatingLeaves } from "./floating-leaves";
 import { Reveal } from "./ui/reveal";
 
-export function Footer() {
+export function Footer({ settings }: { settings: Settings }) {
   const year = new Date().getFullYear();
 
   return (
@@ -24,13 +25,13 @@ export function Footer() {
               </span>
             </div>
             <p className="mt-5 max-w-sm text-[14px] leading-[1.9] text-muted pretty">
-              {brand.shortAbout}
+              {settings.shortAbout}
             </p>
-            <p className="eyebrow mt-6">{brand.tagline}</p>
+            <p className="eyebrow mt-6">{settings.tagline}</p>
 
             <div className="mt-7 flex gap-2">
               <a
-                href={brand.contact.instagram}
+                href={settings.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -39,7 +40,7 @@ export function Footer() {
                 <Instagram className="h-4 w-4" strokeWidth={1.4} />
               </a>
               <a
-                href={brand.contact.linkedin}
+                href={settings.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
@@ -48,7 +49,7 @@ export function Footer() {
                 <Linkedin className="h-4 w-4" strokeWidth={1.4} />
               </a>
               <a
-                href={`mailto:${brand.contact.email}`}
+                href={`mailto:${settings.email}`}
                 aria-label="Email"
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-muted transition-all duration-500 ease-silk hover:-translate-y-0.5 hover:border-primary/40 hover:text-ink hover:shadow-soft"
               >
@@ -78,25 +79,25 @@ export function Footer() {
             <ul className="mt-5 space-y-3.5 text-[14px] text-muted">
               <li>
                 <a
-                  href={brand.contact.phoneHref}
+                  href={settings.phoneHref}
                   className="flex items-start gap-2.5 transition-colors duration-400 hover:text-foreground"
                 >
                   <Phone className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.4} />
-                  {brand.contact.phone}
+                  {settings.phone}
                 </a>
               </li>
               <li>
                 <a
-                  href={`mailto:${brand.contact.email}`}
+                  href={`mailto:${settings.email}`}
                   className="flex items-start gap-2.5 transition-colors duration-400 hover:text-foreground"
                 >
                   <Mail className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.4} />
-                  {brand.contact.email}
+                  {settings.email}
                 </a>
               </li>
               <li className="flex items-start gap-2.5 leading-relaxed">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.4} />
-                {brand.contact.location}
+                {settings.location}
               </li>
             </ul>
           </div>
@@ -106,7 +107,7 @@ export function Footer() {
 
         <div className="mt-7 flex flex-col items-center justify-between gap-3 text-[12px] text-muted sm:flex-row">
           <p>
-            © {year} {brand.name}. All rights reserved.
+            © {year} {settings.brandName}. All rights reserved.
           </p>
           <p className="tracking-wideish">Made slowly, in Hyderabad.</p>
         </div>

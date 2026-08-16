@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Instagram } from "lucide-react";
-import { gallery } from "@/config/gallery";
-import { brand } from "@/config/brand";
+import type { GalleryItem, SectionCopy } from "@/lib/content-types";
 import { ImageFrame } from "@/components/image-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { LinkButton } from "@/components/ui/button";
@@ -18,19 +17,29 @@ const spanFor = (size: string) =>
       ? "sm:col-span-2 aspect-[16/10]"
       : "aspect-square";
 
-export function Gallery() {
+export function Gallery({
+  items,
+  copy,
+  instagramUrl,
+  instagramHandle,
+}: {
+  items: GalleryItem[];
+  copy: SectionCopy;
+  instagramUrl: string;
+  instagramHandle: string;
+}) {
   return (
     <section id="gallery" className="relative py-28 sm:py-36">
       <div className="container">
         <SectionHeading
-          eyebrow="Gallery"
-          title="From the cutting room"
-          accentWords={["cutting"]}
-          subtitle="Unstyled, unedited, mostly taken on a phone between two other things."
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          accentWords={copy.accentWords}
+          subtitle={copy.subtitle}
         />
 
         <div className="mt-16 grid auto-rows-[minmax(180px,auto)] grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-          {gallery.map((item, i) => (
+          {items.map((item, i) => (
             <motion.figure
               key={item.id}
               initial={{ opacity: 0, y: 34, scale: 0.97 }}
@@ -61,14 +70,14 @@ export function Gallery() {
 
         <div className="mt-14 flex justify-center">
           <LinkButton
-            href={brand.contact.instagram}
+            href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             variant="outline"
             size="lg"
           >
             <Instagram className="h-4 w-4" strokeWidth={1.4} />
-            Follow {brand.contact.instagramHandle}
+            Follow {instagramHandle}
           </LinkButton>
         </div>
       </div>

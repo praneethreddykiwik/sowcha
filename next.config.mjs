@@ -13,6 +13,8 @@ const nextConfig = {
   images: {
     // Cloudinary is the only image host. Swap the hostname if you use a custom CNAME.
     remotePatterns: [
+      // Supabase Storage — everything uploaded through the admin page.
+      { protocol: "https", hostname: "*.supabase.co" },
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
     ],

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Clock, Instagram, Mail, MapPin, Phone } from "lucide-react";
-import { brand } from "@/config/brand";
+import type { SectionCopy, Settings } from "@/lib/content-types";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { LinkButton } from "@/components/ui/button";
 import { FloatingLeaves } from "@/components/floating-leaves";
@@ -10,34 +10,40 @@ import { Butterfly } from "@/components/butterfly";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-const lines = [
-  {
-    icon: Phone,
-    label: "Telephone",
-    value: brand.contact.phone,
-    href: brand.contact.phoneHref,
-  },
-  {
-    icon: Mail,
-    label: "Email",
-    value: brand.contact.email,
-    href: `mailto:${brand.contact.email}`,
-  },
-  {
-    icon: Instagram,
-    label: "Instagram",
-    value: brand.contact.instagramHandle,
-    href: brand.contact.instagram,
-  },
-  {
-    icon: MapPin,
-    label: "Atelier",
-    value: brand.contact.location,
-    href: brand.contact.mapsUrl,
-  },
-];
+export function Contact({
+  settings,
+  copy,
+}: {
+  settings: Settings;
+  copy: SectionCopy;
+}) {
+  const lines = [
+    {
+      icon: Phone,
+      label: "Telephone",
+      value: settings.phone,
+      href: settings.phoneHref,
+    },
+    {
+      icon: Mail,
+      label: "Email",
+      value: settings.email,
+      href: `mailto:${settings.email}`,
+    },
+    {
+      icon: Instagram,
+      label: "Instagram",
+      value: settings.instagramHandle,
+      href: settings.instagramUrl,
+    },
+    {
+      icon: MapPin,
+      label: "Atelier",
+      value: settings.location,
+      href: settings.mapsUrl,
+    },
+  ];
 
-export function Contact() {
   return (
     <section id="contact" className="relative overflow-hidden py-28 sm:py-36">
       <div
@@ -52,10 +58,10 @@ export function Contact() {
 
       <div className="container relative">
         <SectionHeading
-          eyebrow="Visit or write"
-          title="Come and see the cloth"
-          accentWords={["cloth"]}
-          subtitle="The rail changes weekly. Tell us what you are looking for and we will set aside the pieces worth your afternoon."
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          accentWords={copy.accentWords}
+          subtitle={copy.subtitle}
         />
 
         <div className="mt-16 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -109,7 +115,7 @@ export function Contact() {
                 Business hours
               </span>
               <ul className="mt-4 space-y-2.5">
-                {brand.contact.hours.map((h) => (
+                {settings.hours.map((h) => (
                   <li
                     key={h.days}
                     className="flex items-baseline justify-between gap-4 text-[14px]"
@@ -127,14 +133,14 @@ export function Contact() {
 
             <div className="mt-9 flex flex-wrap gap-3">
               <LinkButton
-                href={brand.contact.mapsUrl}
+                href={settings.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <MapPin className="h-4 w-4" strokeWidth={1.4} />
                 Open in Google Maps
               </LinkButton>
-              <LinkButton href={`mailto:${brand.contact.email}`} variant="outline">
+              <LinkButton href={`mailto:${settings.email}`} variant="outline">
                 Write to us
               </LinkButton>
             </div>
@@ -190,7 +196,7 @@ export function Contact() {
               <div className="glass-strong rounded-2xl px-5 py-4">
                 <p className="font-serif text-[19px] font-light">The SowCha Atelier</p>
                 <p className="mt-1 text-[13px] leading-relaxed text-muted">
-                  {brand.contact.location}
+                  {settings.location}
                 </p>
               </div>
             </div>

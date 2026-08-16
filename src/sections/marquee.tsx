@@ -2,19 +2,10 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 
-const words = [
-  "Nature inspired",
-  "Hand finished",
-  "Plant dyed",
-  "Made in small batches",
-  "Luxury in simplicity",
-  "Repairs, free for three years",
-];
-
 /** A slow horizontal whisper between sections. */
-export function Marquee() {
+export function Marquee({ words }: { words: string[] }) {
   const reduce = useReducedMotion();
-  const line = [...words, ...words];
+  const line = words.length ? [...words, ...words] : [];
 
   return (
     <div className="relative overflow-hidden border-y border-border bg-card/40 py-6">

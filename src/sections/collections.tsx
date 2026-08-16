@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { collections } from "@/config/products";
+import type { Capsule, SectionCopy } from "@/lib/content-types";
 import { ImageFrame } from "@/components/image-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Tilt } from "@/components/ui/tilt";
@@ -11,13 +11,7 @@ import { cn } from "@/lib/utils";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-function Row({
-  item,
-  index,
-}: {
-  item: (typeof collections)[number];
-  index: number;
-}) {
+function Row({ item, index }: { item: Capsule; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -94,20 +88,26 @@ function Row({
   );
 }
 
-export function Collections() {
+export function Collections({
+  capsules,
+  copy,
+}: {
+  capsules: Capsule[];
+  copy: SectionCopy;
+}) {
   return (
     <section className="relative bg-card/35 py-28 sm:py-36">
       <div className="container">
         <SectionHeading
-          eyebrow="Premium Capsules"
-          title="Three lines, one temperament"
-          accentWords={["temperament"]}
-          subtitle="Each capsule is small on purpose — a handful of silhouettes we can make properly rather than a catalogue we cannot."
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          accentWords={copy.accentWords}
+          subtitle={copy.subtitle}
         />
 
         <div className="mt-20 space-y-24 lg:space-y-32">
-          {collections.map((item, i) => (
-            <Row key={item.slug} item={item} index={i} />
+          {capsules.map((item, i) => (
+            <Row key={item.id} item={item} index={i} />
           ))}
         </div>
       </div>

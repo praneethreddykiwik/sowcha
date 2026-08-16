@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { formatDate, posts } from "@/config/journal";
+import { formatDate } from "@/config/journal";
+import type { Post, SectionCopy } from "@/lib/content-types";
 import { ImageFrame } from "@/components/image-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { LinkButton } from "@/components/ui/button";
@@ -11,7 +12,13 @@ import { Tilt } from "@/components/ui/tilt";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function JournalPreview() {
+export function JournalPreview({
+  posts,
+  copy,
+}: {
+  posts: Post[];
+  copy: SectionCopy;
+}) {
   const featured = posts.slice(0, 3);
 
   return (
@@ -19,11 +26,11 @@ export function JournalPreview() {
       <div className="container">
         <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
           <SectionHeading
-            eyebrow="The Journal"
-            title="Notes from the atelier"
-            accentWords={["atelier"]}
+            eyebrow={copy.eyebrow}
+            title={copy.title}
+            accentWords={copy.accentWords}
             align="left"
-            subtitle="Cloth, dye, hands and the occasional argument about hemlines."
+            subtitle={copy.subtitle}
           />
           <LinkButton href="/journal" variant="outline" className="shrink-0">
             All entries

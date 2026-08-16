@@ -2,32 +2,44 @@
 
 import { motion } from "framer-motion";
 import { Leaf, Recycle, Sprout, Wind } from "lucide-react";
-import { sustainability, testimonials } from "@/config/gallery";
+import type {
+  SectionCopy,
+  SustainabilityPoint,
+  Testimonial,
+} from "@/lib/content-types";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { FloatingLeaves } from "@/components/floating-leaves";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const icons = [Leaf, Sprout, Recycle, Wind];
 
-export function Sustainability() {
+export function Sustainability({
+  points,
+  testimonials,
+  copy,
+}: {
+  points: SustainabilityPoint[];
+  testimonials: Testimonial[];
+  copy: SectionCopy;
+}) {
   return (
     <section className="relative overflow-hidden bg-card/35 py-28 sm:py-36">
       <FloatingLeaves count={6} className="opacity-50" />
 
       <div className="container relative">
         <SectionHeading
-          eyebrow="How we work"
-          title="Kind to skin, kinder to soil"
-          accentWords={["kinder"]}
-          subtitle="Not a campaign — just the constraints we agreed on before the first piece was cut."
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          accentWords={copy.accentWords}
+          subtitle={copy.subtitle}
         />
 
         <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {sustainability.map((item, i) => {
+          {points.map((item, i) => {
             const Icon = icons[i % icons.length];
             return (
               <motion.div
-                key={item.title}
+                key={item.id}
                 initial={{ opacity: 0, y: 34, rotateX: 10 }}
                 whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
@@ -54,7 +66,7 @@ export function Sustainability() {
           <div className="mt-14 grid gap-6 lg:grid-cols-3">
             {testimonials.map((t, i) => (
               <motion.figure
-                key={t.name}
+                key={t.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}

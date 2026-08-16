@@ -1,49 +1,95 @@
 # SowCha
 
-A showcase site for the SowCha label — brand, lookbook and journal. **Not** an
-ecommerce site: there is no cart, checkout, login, pricing, inventory, backend,
-database or admin panel anywhere in the codebase, and none is planned in this
-layer.
+A showcase site for the SowCha label — brand, lookbook and journal, with a
+Supabase-backed admin at `/admin` for editing every image and every line of copy.
 
-Next.js (App Router) · TypeScript · Tailwind CSS · Framer Motion · Cloudinary URLs.
+The public site is a lookbook, not a shop: no cart, checkout, pricing, inventory
+or payments anywhere.
+
+Next.js (App Router) · TypeScript · Tailwind CSS · Framer Motion · Supabase.
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run build    # every route prerenders as static HTML
+cp .env.example .env.local   # fill in the Supabase values
+npm run dev                  # http://localhost:3000
+npm run build
 ```
+
+### Environment
+
+| Variable | Needed | Notes |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | yes | Project API URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | yes | Publishable key — safe in the browser, RLS does the guarding |
+| `NEXT_PUBLIC_SITE_URL` | optional | Absolute URL for OG tags; Vercel's own URL is used if unset |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | no | Legacy image host, unused once images are uploaded to Supabase |
+
+Set the same variables in **Vercel → Settings → Environment Variables** so the
+deployed site talks to the same backend.
 
 ## Editing content
 
-Everything user-facing lives in `src/config` as plain TypeScript. No CMS, no API.
+Everything on the site is edited from **`/admin`** — no code, no redeploy. Each
+save writes to Supabase and immediately revalidates the public pages.
 
-| File | What it holds |
+| Screen | Covers |
 | --- | --- |
-| `brand.ts` | Name, tagline, about copy, mission, vision, values, timeline, phone, email, Instagram, location, hours, nav items |
-| `products.ts` | Featured pieces, editorial capsules, category tiles |
-| `gallery.ts` | Gallery grid, testimonials, FAQs, sustainability points |
-| `journal.ts` | Blog posts (add an object → a page appears at `/journal/<slug>`) |
-| `themes.ts` | The three colour themes |
-| `cloudinary.ts` | Your cloud name + the URL builder |
+| Brand & contact | Name, tagline, hero intro, marquee phrases, the about story, mission, vision, founder quote, both about images, phone, email, Instagram, LinkedIn, address, maps link, opening hours, values, timeline |
+| Section headings | The eyebrow, headline, italic words and intro paragraph above every home-page section |
+| Products | Featured grid + quick-view panels, with photo upload |
+| Capsules | The large editorial rows |
+| Category tiles | The four tiles above the product grid |
+| Gallery | Masonry grid, with square/tall/wide sizing |
+| Journal | Blog entries — block editor for paragraphs, headings, pull quotes, lists and inline images |
+| Testimonials · FAQs · Sustainability | The remaining copy blocks |
+| Media library | Every uploaded file, with copy-URL and delete |
+
+Every collection supports create, edit, reorder, show/hide and delete.
+
+### First sign-in
+
+1. Go to `/admin` — you are redirected to `/admin/login`.
+2. Choose **Create your account** and use an address on the allowlist.
+3. You are signed straight in (allowlisted addresses are auto-confirmed).
+
+To add another admin, insert their address into `admin_emails` in Supabase.
+Anyone can create an account, but without an allowlist entry they get no
+read or write access beyond what the public site already shows.
 
 ### Images
 
-Upload in the Cloudinary dashboard, copy the public id, and reference it:
+Upload directly in any editor — drag a file onto the photo box, or click it.
+Files go to the Supabase Storage `media` bucket (public read, admin-only write,
+10 MB limit, JPG/PNG/WebP/AVIF/GIF/SVG).
 
-```ts
-image: cld("sowcha/products/rosewater-anarkali", { width: 1000 })
+Until a photo is uploaded, every image slot falls back to the hand-drawn
+botanical illustration, so the site never shows a broken tile.
+
+## Backend
+
+Supabase — Postgres, Auth and Storage.
+
+```
+site_settings          brand, about copy, contact, hours, values, timeline
+section_copy           per-section eyebrow / headline / accent words / subtitle
+products · capsules · categories · gallery_items · posts
+testimonials · faqs · sustainability_points
+media                  index of uploaded files
+admin_emails           the write allowlist
 ```
 
-Set your cloud name once, in `.env.local`:
+Row level security is on for every table: anonymous visitors can read published
+rows and nothing else; writes require a signed-in account whose email is in
+`admin_emails`, checked by the `is_admin()` function used in every policy.
 
-```
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
-```
+**Caching.** Public pages are statically rendered and read through a cached
+`getSiteContent()` (5-minute TTL) tagged `site-content`. Every admin save calls
+`revalidateTag`, so edits appear immediately rather than after the TTL. The
+dashboard also has a manual *Refresh live site* button for when you edit rows
+directly in the Supabase table editor.
 
-Until an image resolves, `<ImageFrame>` renders the matching hand-drawn
-botanical illustration instead of a broken tile — so the site looks finished
-with zero configuration, and each photo simply replaces its placeholder as you
-upload it.
+Without Supabase environment variables the app falls back to the bundled
+content in `src/config` — it still builds and renders.
 
 ## Themes
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
-import type { Product } from "@/config/products";
+import type { Product } from "@/lib/content-types";
 import { ImageFrame } from "./image-frame";
 import { Layer, Tilt } from "./ui/tilt";
 import { cn } from "@/lib/utils";

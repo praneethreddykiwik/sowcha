@@ -3,22 +3,23 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
-import { faqs } from "@/config/gallery";
+import type { Faq as FaqItem, SectionCopy } from "@/lib/content-types";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { cn } from "@/lib/utils";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function Faq() {
+export function Faq({ faqs, copy }: { faqs: FaqItem[]; copy: SectionCopy }) {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
     <section className="relative py-28 sm:py-36">
       <div className="container max-w-3xl">
         <SectionHeading
-          eyebrow="Questions"
-          title="The things people ask"
-          accentWords={["ask"]}
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          accentWords={copy.accentWords}
+          subtitle={copy.subtitle}
         />
 
         <div className="mt-14">
@@ -26,7 +27,7 @@ export function Faq() {
             const isOpen = open === i;
             return (
               <motion.div
-                key={item.q}
+                key={item.id}
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}

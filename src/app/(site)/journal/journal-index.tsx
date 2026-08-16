@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { formatDate, type Post } from "@/config/journal";
+import { formatDate } from "@/config/journal";
+import type { Post, SectionCopy } from "@/lib/content-types";
 import { ImageFrame } from "@/components/image-frame";
 import { FloatingLeaves } from "@/components/floating-leaves";
 import { Tilt } from "@/components/ui/tilt";
@@ -12,7 +13,13 @@ import { cn } from "@/lib/utils";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function JournalIndex({ posts }: { posts: Post[] }) {
+export function JournalIndex({
+  posts,
+  copy,
+}: {
+  posts: Post[];
+  copy: SectionCopy;
+}) {
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(posts.map((p) => p.category)))],
     [posts]
@@ -43,7 +50,7 @@ export function JournalIndex({ posts }: { posts: Post[] }) {
             transition={{ duration: 0.9, ease }}
             className="eyebrow"
           >
-            The SowCha Journal
+            {copy.eyebrow}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}

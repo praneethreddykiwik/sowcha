@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { ThemeProvider, themeInitScript } from "@/components/theme/theme-provider";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import { brand } from "@/config/brand";
 import { defaultTheme } from "@/config/themes";
 import "./globals.css";
@@ -84,17 +82,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
-        <ThemeProvider>
-          <a
-            href="#main"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-sm focus:text-white"
-          >
-            Skip to content
-          </a>
-          <Navbar />
-          <main id="main">{children}</main>
-          <Footer />
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

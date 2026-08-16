@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { categories, products, type Product } from "@/config/products";
+import type { Category, Product, SectionCopy } from "@/lib/content-types";
 import { ProductCard } from "@/components/product-card";
-import { BotanicalArt } from "@/components/botanical-art";
 import { ImageFrame } from "@/components/image-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { RevealGroup, RevealItem } from "@/components/ui/reveal";
@@ -13,7 +12,15 @@ import { Tilt } from "@/components/ui/tilt";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function Featured() {
+export function Featured({
+  products,
+  categories,
+  copy,
+}: {
+  products: Product[];
+  categories: Category[];
+  copy: SectionCopy;
+}) {
   const [active, setActive] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -30,22 +37,26 @@ export function Featured() {
     <section id="collection" className="relative py-28 sm:py-36">
       <div className="container">
         <SectionHeading
-          eyebrow="Featured Collection"
-          title="Pieces we are quietly proud of"
-          accentWords={["quietly"]}
-          subtitle="A lookbook, not a shop. Everything here exists — write to us and we will tell you what is currently on the rail."
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          accentWords={copy.accentWords}
+          subtitle={copy.subtitle}
         />
 
         {/* categories */}
         <RevealGroup className="mt-16 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {categories.map((cat, i) => (
-            <RevealItem key={cat.title}>
+            <RevealItem key={cat.id}>
               <Tilt intensity={8} lift={5}>
                 <div className="group relative aspect-[5/4] overflow-hidden rounded-3xl border border-border bg-card shadow-soft transition-shadow duration-700 hover:shadow-lift">
-                  <BotanicalArt
-                    variant={cat.art}
+                  <ImageFrame
+                    src={cat.image}
+                    alt={cat.title}
+                    art={cat.art}
                     seed={i + 30}
-                    className="absolute inset-0 transition-transform duration-1200 ease-silk group-hover:scale-[1.06]"
+                    sizes="(max-width: 1024px) 45vw, 24vw"
+                    imgClassName="group-hover:scale-[1.06]"
+                    className="absolute inset-0 [&>svg]:transition-transform [&>svg]:duration-1200 [&>svg]:ease-silk group-hover:[&>svg]:scale-[1.06]"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/35 via-transparent to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-5">

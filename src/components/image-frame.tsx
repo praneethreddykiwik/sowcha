@@ -8,9 +8,24 @@ import { BotanicalArt } from "./botanical-art";
 import { cn } from "@/lib/utils";
 
 /**
- * A Cloudinary image that degrades gracefully: while the account is not
- * configured (or a public id is wrong) we render the matching botanical
- * illustration instead of a broken tile.
+ * Decides whether a URL is worth requesting.
+ *
+ * Uploads from the admin page (Supabase Storage) and any ordinary absolute URL
+ * are fetched. Legacy Cloudinary URLs are only fetched when an account is
+ * actually configured — otherwise every tile would 404 through the image
+ * optimizer. Anything else falls through to the illustration.
+ */
+export function isRenderableImage(src?: string | null): boolean {
+  if (!src) return false;
+  if (src.startsWith("/")) return true;
+  if (src.includes("res.cloudinary.com")) return isCloudinaryConfigured;
+  return /^https?:\/\//i.test(src);
+}
+
+/**
+ * An image that degrades gracefully: until a photo is uploaded (or if one
+ * fails to load) we render the matching botanical illustration instead of a
+ * broken tile.
  */
 export function ImageFrame({
   src,
@@ -22,7 +37,7 @@ export function ImageFrame({
   sizes = "(max-width: 768px) 100vw, 33vw",
   priority = false,
 }: {
-  src: string;
+  src?: string | null;
   alt: string;
   art?: ArtVariant;
   seed?: number;
@@ -34,9 +49,7 @@ export function ImageFrame({
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  // No account configured yet → don't even request the URL; the illustration
-  // is the intended visual until real photography is uploaded.
-  const showRemote = isCloudinaryConfigured && !failed;
+  const showRemote = isRenderableImage(src) && !failed;
 
   return (
     <div className={cn("relative h-full w-full overflow-hidden bg-background", className)}>
@@ -50,7 +63,7 @@ export function ImageFrame({
         )}
       />
 
-      {showRemote && (
+      {showRemote && src && (
         <Image
           src={src}
           alt={alt}

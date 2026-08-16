@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { brand } from "@/config/brand";
-import { cld } from "@/config/cloudinary";
+import type { SectionCopy, Settings } from "@/lib/content-types";
 import { ImageFrame } from "@/components/image-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Tilt } from "@/components/ui/tilt";
@@ -10,15 +9,21 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/ui/reveal";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function About() {
+export function About({
+  settings,
+  copy,
+}: {
+  settings: Settings;
+  copy: SectionCopy;
+}) {
   return (
     <section id="about" className="relative overflow-hidden py-28 sm:py-36">
       <div className="container">
         <SectionHeading
-          eyebrow="Our Story"
-          title="Made slowly, worn softly"
-          accentWords={["softly"]}
-          subtitle={brand.about.intro}
+          eyebrow={copy.eyebrow}
+          title={copy.title}
+          accentWords={copy.accentWords}
+          subtitle={settings.aboutIntro}
           align="center"
         />
 
@@ -33,7 +38,7 @@ export function About() {
               <Tilt intensity={5} lift={6}>
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[32px] border border-border bg-card shadow-lift">
                   <ImageFrame
-                    src={cld("sowcha/about/atelier-hands", { width: 1000 })}
+                    src={settings.aboutImageUrl}
                     alt="Hand finishing at the SowCha atelier"
                     art="folds"
                     seed={12}
@@ -50,7 +55,7 @@ export function About() {
               >
                 <div className="relative aspect-square">
                   <ImageFrame
-                    src={cld("sowcha/about/vine-detail", { width: 700 })}
+                    src={settings.aboutImage2Url}
                     alt="Hand-painted vine detail"
                     art="sprig"
                     seed={5}
@@ -63,30 +68,30 @@ export function About() {
 
           <Reveal variant="right" duration={1.2} delay={0.1}>
             <p className="text-[16px] leading-[1.95] text-foreground/85 pretty">
-              {brand.about.body}
+              {settings.aboutBody}
             </p>
 
             <div className="mt-10 grid gap-8 sm:grid-cols-2">
               <div>
                 <h3 className="eyebrow">Mission</h3>
                 <p className="mt-3 text-[14.5px] leading-[1.85] text-muted pretty">
-                  {brand.about.mission}
+                  {settings.mission}
                 </p>
               </div>
               <div>
                 <h3 className="eyebrow">Vision</h3>
                 <p className="mt-3 text-[14.5px] leading-[1.85] text-muted pretty">
-                  {brand.about.vision}
+                  {settings.vision}
                 </p>
               </div>
             </div>
 
             <figure className="mt-10 border-l border-accent pl-6">
               <blockquote className="font-serif text-[22px] font-light italic leading-[1.55] text-foreground/90 pretty">
-                “{brand.about.founderNote}”
+                “{settings.founderNote}”
               </blockquote>
               <figcaption className="mt-3 text-[12px] uppercase tracking-wideish text-muted">
-                {brand.about.founderName}
+                {settings.founderName}
               </figcaption>
             </figure>
           </Reveal>
@@ -96,7 +101,7 @@ export function About() {
         <div className="mt-28">
           <div className="rule" />
           <RevealGroup className="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {brand.timeline.map((item) => (
+            {settings.timeline.map((item) => (
               <RevealItem key={item.year} variant="up">
                 <div className="group relative">
                   <span className="font-serif text-[46px] font-light leading-none text-ink/25 transition-colors duration-700 group-hover:text-ink/50">
@@ -114,7 +119,7 @@ export function About() {
 
         {/* values */}
         <div className="mt-24 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {brand.values.map((value, i) => (
+          {settings.values.map((value, i) => (
             <motion.div
               key={value.title}
               initial={{ opacity: 0, y: 30, rotateX: 10 }}
