@@ -1,6 +1,8 @@
 import { getSiteContent } from "@/lib/content";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { CartProvider } from "@/components/cart/cart-provider";
+import { CartDrawer } from "@/components/cart/cart-drawer";
 
 /**
  * Public shell. The admin area lives outside this group so it never inherits
@@ -14,7 +16,7 @@ export default async function SiteLayout({
   const { settings } = await getSiteContent();
 
   return (
-    <>
+    <CartProvider>
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-sm focus:text-white"
@@ -24,6 +26,10 @@ export default async function SiteLayout({
       <Navbar settings={settings} />
       <main id="main">{children}</main>
       <Footer settings={settings} />
-    </>
+      <CartDrawer
+        shippingFlatCents={settings.shippingFlatCents}
+        freeShippingThresholdCents={settings.freeShippingThresholdCents}
+      />
+    </CartProvider>
   );
 }

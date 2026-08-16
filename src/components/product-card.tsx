@@ -2,6 +2,7 @@
 
 import { ArrowUpRight } from "lucide-react";
 import type { Product } from "@/lib/content-types";
+import { formatMoney } from "@/lib/money";
 import { ImageFrame } from "./image-frame";
 import { Layer, Tilt } from "./ui/tilt";
 import { cn } from "@/lib/utils";
@@ -52,9 +53,16 @@ export function ProductCard({
         </div>
 
         <Layer z={22} className="flex flex-1 flex-col p-6">
-          <h3 className="font-serif text-[24px] font-light leading-tight">
-            {product.name}
-          </h3>
+          <div className="flex items-baseline justify-between gap-3">
+            <h3 className="font-serif text-[24px] font-light leading-tight">
+              {product.name}
+            </h3>
+            {product.priceCents > 0 && (
+              <span className="shrink-0 text-[15px] tabular-nums text-foreground/80">
+                {formatMoney(product.priceCents, product.currency)}
+              </span>
+            )}
+          </div>
           <p className="mt-2 text-[13.5px] leading-[1.75] text-muted pretty">
             {product.description}
           </p>

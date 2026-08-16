@@ -23,6 +23,11 @@ export type Settings = {
   location: string;
   mapsUrl: string;
   hours: { days: string; time: string }[];
+  shippingFlatCents: number;
+  freeShippingThresholdCents: number;
+  codEnabled: boolean;
+  bankTransferEnabled: boolean;
+  bankTransferNote: string;
   values: { title: string; body: string }[];
   timeline: { year: string; title: string; body: string }[];
   marqueeWords: string[];
@@ -35,6 +40,16 @@ export type SectionCopy = {
   subtitle: string;
 };
 
+export type ProductVariant = {
+  id: string;
+  size: string;
+  color: string;
+  sku: string;
+  /** Falls back to the product price when the variant has no override. */
+  priceCents: number;
+  stock: number;
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -45,6 +60,16 @@ export type Product = {
   materials: string[];
   art: ArtVariant;
   image: string;
+  /** Extra gallery shots beyond the main image. */
+  images: string[];
+  care: string;
+  sku: string;
+  priceCents: number;
+  compareAtPriceCents: number | null;
+  currency: string;
+  stock: number;
+  trackInventory: boolean;
+  variants: ProductVariant[];
 };
 
 export type Capsule = {

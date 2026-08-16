@@ -15,6 +15,7 @@ import {
   Menu,
   MessageSquareQuote,
   Newspaper,
+  Receipt,
   Settings,
   Shirt,
   Type,
@@ -26,6 +27,7 @@ import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/admin", label: "Overview", icon: LayoutGrid, exact: true },
+  { href: "/admin/orders", label: "Orders", icon: Receipt },
   { href: "/admin/brand", label: "Brand & contact", icon: Settings },
   { href: "/admin/sections", label: "Section headings", icon: Type },
   { href: "/admin/products", label: "Products", icon: Shirt },

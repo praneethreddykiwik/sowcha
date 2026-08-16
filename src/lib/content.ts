@@ -29,6 +29,8 @@ async function fetchContent(): Promise<SiteContent> {
     const [
       settingsRes,
       sectionsRes,
+      variantsRes,
+      imagesRes,
       productsRes,
       capsulesRes,
       categoriesRes,
@@ -40,6 +42,8 @@ async function fetchContent(): Promise<SiteContent> {
     ] = await Promise.all([
       supabasePublic.from("site_settings").select("*").eq("id", 1).maybeSingle(),
       supabasePublic.from("section_copy").select("*"),
+      supabasePublic.from("product_variants").select("*").eq("is_active", true).order("sort_order"),
+      supabasePublic.from("product_images").select("*").order("sort_order"),
       supabasePublic
         .from("products")
         .select("*")
@@ -108,6 +112,12 @@ async function fetchContent(): Promise<SiteContent> {
           location: str(s.location, fb.settings.location),
           mapsUrl: str(s.maps_url, fb.settings.mapsUrl),
           hours: Array.isArray(s.hours) && s.hours.length ? s.hours : fb.settings.hours,
+          shippingFlatCents: s.shipping_flat_cents ?? fb.settings.shippingFlatCents,
+          freeShippingThresholdCents:
+            s.free_shipping_threshold_cents ?? fb.settings.freeShippingThresholdCents,
+          codEnabled: s.cod_enabled ?? true,
+          bankTransferEnabled: s.bank_transfer_enabled ?? true,
+          bankTransferNote: s.bank_transfer_note ?? "",
           values: Array.isArray(s.brand_values) && s.brand_values.length
             ? s.brand_values
             : fb.settings.values,
@@ -139,6 +149,20 @@ async function fetchContent(): Promise<SiteContent> {
       };
     }
 
+    const variantsByProduct = new Map<string, any[]>();
+    for (const v of (variantsRes.data ?? []) as any[]) {
+      const list = variantsByProduct.get(v.product_id) ?? [];
+      list.push(v);
+      variantsByProduct.set(v.product_id, list);
+    }
+
+    const imagesByProduct = new Map<string, string[]>();
+    for (const img of (imagesRes.data ?? []) as any[]) {
+      const list = imagesByProduct.get(img.product_id) ?? [];
+      list.push(img.url);
+      imagesByProduct.set(img.product_id, list);
+    }
+
     const products = (productsRes.data ?? []).map((p: any) => ({
       id: p.id,
       slug: p.slug,
@@ -149,6 +173,22 @@ async function fetchContent(): Promise<SiteContent> {
       materials: Array.isArray(p.materials) ? p.materials : [],
       art: asArt(p.art_variant),
       image: p.image_url ?? "",
+      images: imagesByProduct.get(p.id) ?? [],
+      care: p.care ?? "",
+      sku: p.sku ?? "",
+      priceCents: p.price_cents ?? 0,
+      compareAtPriceCents: p.compare_at_price_cents ?? null,
+      currency: p.currency ?? "INR",
+      stock: p.stock ?? 0,
+      trackInventory: p.track_inventory ?? true,
+      variants: (variantsByProduct.get(p.id) ?? []).map((v: any) => ({
+        id: v.id,
+        size: v.size ?? "",
+        color: v.color ?? "",
+        sku: v.sku ?? "",
+        priceCents: v.price_cents ?? p.price_cents ?? 0,
+        stock: v.stock ?? 0,
+      })),
     }));
 
     const capsules = (capsulesRes.data ?? []).map((c: any) => ({

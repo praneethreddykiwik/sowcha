@@ -3,10 +3,12 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCollection } from "@/lib/admin/collections";
 import { CollectionEditor } from "@/components/admin/collection-editor";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * One route serves every collection listed in lib/admin/collections.ts.
- * Reserved admin paths (brand, sections, media, login) have their own files and
- * take precedence over this dynamic segment.
+ * Reserved admin paths (brand, sections, media, orders, login) have their own
+ * files and take precedence over this dynamic segment.
  */
 export default async function CollectionPage({
   params,
@@ -32,5 +34,36 @@ export default async function CollectionPage({
     );
   }
 
-  return <CollectionEditor collection={collection} initialRows={data ?? []} />;
+  let rows: any[] = data ?? [];
+
+  // Sizes live in their own table; fold them into each product row so the
+  // editor can present them as one form.
+  if (collection.key === "products" && rows.length) {
+    const { data: variants } = await supabase
+      .from("product_variants")
+      .select("*")
+      .in(
+        "product_id",
+        rows.map((r) => r.id)
+      )
+      .order("sort_order");
+
+    const byProduct = new Map<string, any[]>();
+    for (const v of variants ?? []) {
+      const list = byProduct.get(v.product_id) ?? [];
+      list.push({
+        id: v.id,
+        size: v.size ?? "",
+        color: v.color ?? "",
+        sku: v.sku ?? "",
+        price_cents: v.price_cents,
+        stock: v.stock ?? 0,
+      });
+      byProduct.set(v.product_id, list);
+    }
+
+    rows = rows.map((r) => ({ ...r, variants: byProduct.get(r.id) ?? [] }));
+  }
+
+  return <CollectionEditor collection={collection} initialRows={rows} />;
 }

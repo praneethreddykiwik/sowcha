@@ -7,6 +7,9 @@ import { ART_VARIANTS } from "@/lib/content-types";
  */
 
 export type FieldType =
+  | "money"
+  | "variants"
+  | "gallery"
   | "text"
   | "textarea"
   | "richtext"
@@ -26,6 +29,10 @@ export type Field = {
   options?: string[];
   required?: boolean;
   rows?: number;
+  /** Numeric bounds, enforced as you type and again in Postgres. */
+  min?: number;
+  max?: number;
+  maxLength?: number;
 };
 
 export type CollectionKey =
@@ -88,7 +95,34 @@ export const collections: Collection[] = [
         help: "Lowercase, hyphenated. Used internally and must be unique.",
       },
       { name: "collection", label: "Capsule label", type: "text" },
-      { name: "image_url", label: "Photo", type: "image" },
+      { name: "image_url", label: "Main photo", type: "image" },
+      {
+        name: "price_cents",
+        label: "Price",
+        type: "money",
+        help: "What the shopper pays. Shown on the card and charged at checkout.",
+      },
+      {
+        name: "compare_at_price_cents",
+        label: "Compare-at price",
+        type: "money",
+        help: "Optional. Shown struck through beside the price.",
+      },
+      { name: "sku", label: "SKU", type: "text", maxLength: 40 },
+      {
+        name: "stock",
+        label: "Stock (when there are no sizes)",
+        type: "number",
+        min: 0,
+        max: 99999,
+        help: "Whole numbers, 0–99,999. Ignored once you add sizes below — each size carries its own stock.",
+      },
+      {
+        name: "variants",
+        label: "Sizes & stock",
+        type: "variants",
+        help: "Add a row per size. Leave the price blank to use the product price.",
+      },
       { name: "description", label: "Short description", type: "textarea", rows: 2 },
       {
         name: "detail",
@@ -103,6 +137,8 @@ export const collections: Collection[] = [
         type: "tags",
         help: "Press Enter after each material.",
       },
+      { name: "care", label: "Care instructions", type: "textarea", rows: 3 },
+      { name: "is_featured", label: "Feature this piece", type: "boolean" },
       artField,
       publishedField,
     ],
@@ -115,6 +151,13 @@ export const collections: Collection[] = [
       materials: [],
       art_variant: "anarkali",
       image_url: null,
+      price_cents: 0,
+      compare_at_price_cents: null,
+      sku: "",
+      stock: 0,
+      care: "",
+      is_featured: false,
+      variants: [],
       is_published: true,
     },
   },

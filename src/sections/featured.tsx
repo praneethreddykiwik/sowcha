@@ -9,6 +9,7 @@ import { ImageFrame } from "@/components/image-frame";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { RevealGroup, RevealItem } from "@/components/ui/reveal";
 import { Tilt } from "@/components/ui/tilt";
+import { AddToCart } from "@/components/cart/add-to-cart";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -130,6 +131,10 @@ export function Featured({
                   {active.detail}
                 </p>
 
+                <div className="mt-7 border-t border-border pt-7">
+                  <AddToCart product={active} />
+                </div>
+
                 <h4 className="eyebrow mt-8">Materials</h4>
                 <ul className="mt-3 space-y-2">
                   {active.materials.map((m) => (
@@ -143,9 +148,14 @@ export function Featured({
                   ))}
                 </ul>
 
-                <p className="mt-auto pt-8 text-[12px] leading-relaxed text-muted">
-                  Displayed for reference. Availability is confirmed by appointment.
-                </p>
+                {active.care && (
+                  <>
+                    <h4 className="eyebrow mt-8">Care</h4>
+                    <p className="mt-3 text-[13.5px] leading-[1.8] text-muted pretty">
+                      {active.care}
+                    </p>
+                  </>
+                )}
               </div>
 
               <button

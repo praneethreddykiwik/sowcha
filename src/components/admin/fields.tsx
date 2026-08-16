@@ -39,17 +39,23 @@ export function TextField({
   onChange,
   placeholder,
   type = "text",
+  maxLength,
+  inputMode,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   type?: string;
+  maxLength?: number;
+  inputMode?: "text" | "numeric" | "decimal" | "tel" | "email" | "url";
 }) {
   return (
     <input
       type={type}
       value={value ?? ""}
       placeholder={placeholder}
+      maxLength={maxLength}
+      inputMode={inputMode}
       onChange={(e) => onChange(e.target.value)}
       className={inputClass}
     />
@@ -60,16 +66,19 @@ export function TextArea({
   value,
   onChange,
   rows = 3,
+  maxLength = 4000,
 }: {
   value: string;
   onChange: (v: string) => void;
   rows?: number;
+  maxLength?: number;
 }) {
   return (
     <textarea
       value={value ?? ""}
       rows={rows}
-      onChange={(e) => onChange(e.target.value)}
+      maxLength={maxLength}
+      onChange={(e) => onChange(e.target.value.slice(0, maxLength))}
       className={cn(inputClass, "resize-y leading-relaxed")}
     />
   );

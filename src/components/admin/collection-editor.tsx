@@ -15,7 +15,13 @@ import {
 } from "lucide-react";
 import type { Collection, Field } from "@/lib/admin/collections";
 import type { Block } from "@/lib/content-types";
-import { deleteRow, reorderRows, saveRow } from "@/app/admin/actions";
+import {
+  deleteRow,
+  reorderRows,
+  saveProductVariants,
+  saveRow,
+  type VariantInput,
+} from "@/app/admin/actions";
 import {
   ImageField,
   Label,
@@ -26,6 +32,8 @@ import {
   Toggle,
 } from "./fields";
 import { BlocksEditor } from "./blocks-editor";
+import { MoneyField, VariantsField } from "./commerce-fields";
+import { sanitiseInteger } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 type Row = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -65,10 +73,20 @@ export function CollectionEditor({
   function handleSave() {
     if (!editing) return;
 
-    // Only send real columns; strip database-managed fields.
+    // Only send real columns; `variants` lives in its own table and is stripped
+    // out here, then saved once the product row has an id.
     const payload: Row = {};
-    for (const field of collection.fields) payload[field.name] = editing[field.name];
+    for (const field of collection.fields) {
+      if (field.type === "variants") continue;
+      payload[field.name] = editing[field.name];
+    }
     if (isNew) payload.sort_order = rows.length + 1;
+
+    const variants: VariantInput[] | null = collection.fields.some(
+      (f) => f.type === "variants"
+    )
+      ? (editing.variants ?? [])
+      : null;
 
     startTransition(async () => {
       const result = await saveRow(
@@ -76,6 +94,15 @@ export function CollectionEditor({
         isNew ? null : editing.id,
         payload
       );
+
+      if (result.ok && variants && result.id) {
+        const variantResult = await saveProductVariants(result.id, variants);
+        if (!variantResult.ok) {
+          flash(variantResult);
+          return;
+        }
+      }
+
       flash(result);
       if (result.ok) {
         setEditing(null);
@@ -321,7 +348,11 @@ function FieldInput({
       <Label help={field.help}>{field.label}</Label>
       <div className="mt-2">
         {field.type === "text" && (
-          <TextField value={(value as string) ?? ""} onChange={onChange} />
+          <TextField
+            value={(value as string) ?? ""}
+            maxLength={field.maxLength ?? 200}
+            onChange={onChange}
+          />
         )}
         {field.type === "date" && (
           <TextField
@@ -332,15 +363,19 @@ function FieldInput({
         )}
         {field.type === "number" && (
           <TextField
-            type="number"
-            value={String(value ?? "")}
-            onChange={(v) => onChange(Number(v))}
+            inputMode="numeric"
+            maxLength={String(field.max ?? 99999).length}
+            value={String(value ?? 0)}
+            onChange={(v) =>
+              onChange(sanitiseInteger(v, field.min ?? 0, field.max ?? 99999))
+            }
           />
         )}
         {(field.type === "textarea" || field.type === "richtext") && (
           <TextArea
             value={(value as string) ?? ""}
             rows={field.rows ?? 3}
+            maxLength={field.maxLength ?? 4000}
             onChange={onChange}
           />
         )}
@@ -363,6 +398,19 @@ function FieldInput({
         )}
         {field.type === "blocks" && (
           <BlocksEditor value={(value as Block[]) ?? []} onChange={onChange} />
+        )}
+        {field.type === "money" && (
+          <MoneyField
+            value={(value as number | null) ?? null}
+            onChange={onChange}
+            allowEmpty={field.name.startsWith("compare_at")}
+          />
+        )}
+        {field.type === "variants" && (
+          <VariantsField
+            value={(value as VariantInput[]) ?? []}
+            onChange={onChange}
+          />
         )}
       </div>
     </label>

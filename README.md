@@ -3,8 +3,9 @@
 A showcase site for the SowCha label — brand, lookbook and journal, with a
 Supabase-backed admin at `/admin` for editing every image and every line of copy.
 
-The public site is a lookbook, not a shop: no cart, checkout, pricing, inventory
-or payments anywhere.
+The site also sells: cart, checkout, stock-aware sizes, order tracking, and an
+Orders desk in the admin. Payment is cash on delivery or bank transfer — no
+gateway keys required.
 
 Next.js (App Router) · TypeScript · Tailwind CSS · Framer Motion · Supabase.
 
@@ -65,14 +66,46 @@ Files go to the Supabase Storage `media` bucket (public read, admin-only write,
 Until a photo is uploaded, every image slot falls back to the hand-drawn
 botanical illustration, so the site never shows a broken tile.
 
+## Shop
+
+| Piece | Where |
+| --- | --- |
+| Prices, compare-at price, SKU, stock, care notes | Admin → Products |
+| Sizes with their own stock and optional price override | Admin → Products → Sizes & stock |
+| Cart | Basket button in the navbar; persists in `localStorage` |
+| Checkout | `/checkout` — address, COD or bank transfer |
+| Order tracking | `/orders/track` — order number **and** the email used |
+| Orders desk | Admin → Orders — status, payment, courier, tracking, revenue |
+
+**Prices are never trusted from the browser.** The cart sends product ids and
+quantities only; `place_order()` reads every price from the database, locks the
+rows, checks stock and computes the total in one transaction. Editing the cart
+in devtools changes the display and nothing else.
+
+Money is stored as integer paise everywhere (`price_cents`), so there is no
+float drift and no numeric-as-string surprises.
+
+Order numbers look like `SC-2026-1003-7824` — sequential prefix for readability,
+random suffix so they cannot be walked. Tracking needs the number *and* the
+matching email, checked inside `get_order_status()`; the orders table itself is
+never readable from the browser.
+
 ## Backend
 
 Supabase — Postgres, Auth and Storage.
 
+The full schema is committed at [`supabase/schema.sql`](supabase/schema.sql) —
+run it on a fresh project to recreate everything.
+
 ```
-site_settings          brand, about copy, contact, hours, values, timeline
+site_settings          brand, about copy, contact, hours, values, timeline,
+                       shipping rates and payment toggles
 section_copy           per-section eyebrow / headline / accent words / subtitle
-products · capsules · categories · gallery_items · posts
+products               copy, price, stock, SKU, care
+product_variants       sizes, each with its own stock
+product_images         extra gallery shots
+orders · order_items   checkout output, with snapshotted names and prices
+capsules · categories · gallery_items · posts
 testimonials · faqs · sustainability_points
 media                  index of uploaded files
 admin_emails           the write allowlist

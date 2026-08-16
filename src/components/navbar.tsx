@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
-import { Instagram, Menu, X } from "lucide-react";
+import { Instagram, Menu, ShoppingBag, X } from "lucide-react";
 import { nav } from "@/config/brand";
 import type { Settings } from "@/lib/content-types";
 import { Wordmark } from "./butterfly";
 import { ThemeToggle } from "./theme/theme-toggle";
+import { CartButton } from "./cart/cart-button";
 import { cn } from "@/lib/utils";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -82,6 +83,7 @@ export function Navbar({ settings }: { settings: Settings }) {
             </ul>
 
             <div className="flex items-center gap-2">
+              <CartButton />
               <ThemeToggle />
               <a
                 href={settings.instagramUrl}
