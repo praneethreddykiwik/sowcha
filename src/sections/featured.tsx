@@ -106,6 +106,21 @@ export function Featured({
             />
 
             {/*
+              Mobile close button lives here rather than on the panel: the panel
+              carries a framer-motion transform, and a transformed ancestor
+              becomes the containing block for `position: fixed`, so a button
+              inside it scrolls away with the content.
+            */}
+            <button
+              type="button"
+              onClick={() => setActive(null)}
+              aria-label="Close"
+              className="glass-strong fixed right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full text-foreground shadow-soft transition-colors duration-400 hover:text-ink sm:hidden"
+            >
+              <X className="h-4 w-4" strokeWidth={1.5} />
+            </button>
+
+            {/*
               The overlay scrolls, not the panel. A tall product on a short
               phone previously overflowed a max-height panel that was also
               overflow-hidden, so the description and Add to basket were simply
@@ -172,9 +187,7 @@ export function Featured({
                 type="button"
                 onClick={() => setActive(null)}
                 aria-label="Close"
-                /* Fixed on mobile: the panel is now taller than the screen, so
-                   an absolutely positioned close button would scroll away. */
-                className="glass fixed right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full text-foreground shadow-soft transition-colors duration-400 hover:text-ink sm:absolute sm:right-4 sm:top-4 sm:h-10 sm:w-10 sm:shadow-none"
+                className="glass absolute right-4 top-4 hidden h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors duration-400 hover:text-ink sm:flex"
               >
                 <X className="h-4 w-4" strokeWidth={1.5} />
               </button>
