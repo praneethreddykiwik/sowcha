@@ -131,7 +131,7 @@ export function Navbar({ settings }: { settings: Settings }) {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.6, ease }}
-              className="glass-strong absolute right-0 top-0 flex h-full w-[min(86vw,360px)] flex-col p-6"
+              className="glass-strong absolute right-0 top-0 flex h-[100dvh] w-[min(86vw,360px)] flex-col overflow-y-auto overscroll-contain p-6"
             >
               <div className="flex items-center justify-between">
                 <Wordmark />
