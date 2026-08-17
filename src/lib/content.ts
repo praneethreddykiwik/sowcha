@@ -23,7 +23,16 @@ const str = (value: unknown, fallback = "") =>
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 async function fetchContent(): Promise<SiteContent> {
-  if (!supabasePublic) return fallbackContent;
+  if (!supabasePublic) {
+    // Silent fallback is how the shop ends up showing an unbuyable catalogue
+    // with no prices. Say so loudly in the server log.
+    console.warn(
+      "[sowcha] Supabase is not configured — serving the bundled catalogue. " +
+        "Products will have no prices and cannot be added to the basket. " +
+        "Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+    );
+    return fallbackContent;
+  }
 
   try {
     const [
@@ -269,8 +278,12 @@ async function fetchContent(): Promise<SiteContent> {
         ? sustainabilityPoints
         : fb.sustainability,
     };
-  } catch {
-    // Never fail the page on a backend hiccup.
+  } catch (error) {
+    // Never fail the page on a backend hiccup, but do not fail quietly either.
+    console.error(
+      "[sowcha] Content query failed — serving the bundled catalogue instead:",
+      error
+    );
     return fallbackContent;
   }
 }
