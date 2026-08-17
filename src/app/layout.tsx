@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import { ThemeProvider, themeInitScript } from "@/components/theme/theme-provider";
 import { brand } from "@/config/brand";
 import { defaultTheme } from "@/config/themes";
+import { siteUrl } from "@/config/site";
 import "./globals.css";
 
 const display = Cormorant_Garamond({
@@ -19,18 +20,6 @@ const body = Inter({
   display: "swap",
 });
 
-/**
- * Absolute base for OG/canonical URLs. Set NEXT_PUBLIC_SITE_URL once the real
- * domain is live; until then Vercel's own deployment URL is used (so preview
- * deploys advertise themselves, not production), and localhost in dev.
- */
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -59,6 +48,8 @@ export const metadata: Metadata = {
     description: brand.shortAbout,
   },
   robots: { index: true, follow: true },
+  // Without this, www and the apex are two indexable copies of every page.
+  alternates: { canonical: "/" },
 };
 
 export const viewport: Viewport = {

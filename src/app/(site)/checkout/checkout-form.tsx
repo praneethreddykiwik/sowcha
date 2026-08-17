@@ -308,7 +308,17 @@ export function CheckoutForm({
     });
   }
 
-  if (ready && lines.length === 0) {
+  // Before hydration the cart is unknown. Rendering the form here showed a
+  // complete checkout with "Subtotal ₹0" to every first-paint visitor.
+  if (!ready) {
+    return (
+      <section className="flex min-h-[70svh] items-center justify-center py-32">
+        <span className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-ink" />
+      </section>
+    );
+  }
+
+  if (lines.length === 0) {
     return (
       <section className="relative flex min-h-[70svh] items-center justify-center overflow-hidden py-32">
         <FloatingLeaves count={6} className="opacity-50" />
